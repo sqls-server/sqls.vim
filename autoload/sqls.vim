@@ -11,7 +11,13 @@ function! sqls#execute_query() abort
 endfunction
 
 function! sqls#show_databases() abort
-    echo 'no implements'
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'showDatabases',
+    \   'command_args': v:null,
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
 endfunction
 
 function! sqls#show_tables() abort
