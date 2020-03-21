@@ -64,7 +64,32 @@ function! s:handle_execute_command(server_name, command, data) abort
     if lsp#client#is_error(a:data['response'])
         call lsp#utils#error('Execute command failed on ' . a:server_name . ': ' . string(a:command) . ' -> ' . string(a:data))
     else
-        " echo a:data['response']['result']
-        call lsp#ui#vim#output#preview(a:server_name, a:data['response']['result'], {'statusline': ' LSP ExecuteCommand'})
+        call s:open_preview_buffer(a:data['response']['result'], 'LSP ExecuteCommand')
     endif
+endfunction
+
+function! s:escape_string_for_display(str) abort
+    return substitute(substitute(a:str, '\r\n', '\n', 'g'), '\r', '\n', 'g')
+endfunction
+
+function! s:open_preview_buffer(data, buf_filetype) abort
+    " let l:current_win_id = win_getid()
+
+    " create preview window
+    " execute &previewheight.'new'
+    execute 'new'
+    let l:preview_win_id = win_getid()
+
+    " set preview content
+    call setline(1, split(s:escape_string_for_display(a:data), '\n'))
+
+    " setup preview window
+    setlocal
+    \ bufhidden=wipe nomodified nobuflisted noswapfile nonumber
+    \ nocursorline wrap nonumber norelativenumber signcolumn=no nofoldenable
+    \ nospell nolist nomodeline
+    silent! let &l:filetype = a:buf_filetype
+
+    " set the focus to the preview window
+    call win_gotoid(l:preview_win_id)
 endfunction
