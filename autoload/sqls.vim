@@ -23,6 +23,17 @@ function! sqls#show_databases() abort
     \ })
 endfunction
 
+function! sqls#show_connections() abort
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'showConnections',
+    \   'command_args': v:null,
+    \   'callback_func': 's:handle_preview',
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
+endfunction
+
 function! sqls#show_tables() abort
     echo 'no implements'
 endfunction
@@ -31,12 +42,49 @@ function! sqls#describe_table() abort
     echo 'no implements'
 endfunction
 
-function! sqls#switch_database() abort
+function! sqls#switch_database(...) abort
+    if a:0 >= 1
+        let l:db_name = a:1
+        call sqls#lsp_execute_command({
+        \   'server_name': 'sqls',
+        \   'command_name': 'switchDatabase',
+        \   'command_args': [l:db_name],
+        \   'callback_func': 's:handle_no_preview',
+        \   'sync': v:false,
+        \   'bufnr': bufnr('%'),
+        \ })
+        return
+    endif
+
     call sqls#lsp_execute_command({
     \   'server_name': 'sqls',
     \   'command_name': 'showDatabases',
     \   'command_args': v:null,
     \   'callback_func': 's:handle_fetch_database',
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
+endfunction
+
+function! sqls#switch_connection(...) abort
+    if a:0 >= 1
+        let l:conn_index = a:1
+        call sqls#lsp_execute_command({
+        \   'server_name': 'sqls',
+        \   'command_name': 'switchConnections',
+        \   'command_args': [l:conn_index],
+        \   'callback_func': 's:handle_no_preview',
+        \   'sync': v:false,
+        \   'bufnr': bufnr('%'),
+        \ })
+        return
+    endif
+
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'showConnections',
+    \   'command_args': v:null,
+    \   'callback_func': 's:handle_fetch_connection',
     \   'sync': v:false,
     \   'bufnr': bufnr('%'),
     \ })
@@ -82,12 +130,25 @@ function! sqls#lsp_execute_command(params) abort
     echo 'Do ' . l:command_name
 endfunction
 
-function! sqls#fzf_sink(line) abort
+function! sqls#fzf_sink_switch_database(line) abort
     let l:database = a:line
     call sqls#lsp_execute_command({
     \   'server_name': 'sqls',
     \   'command_name': 'switchDatabase',
     \   'command_args': [l:database],
+    \   'callback_func': 's:handle_no_preview',
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
+endfunction
+
+function! sqls#fzf_sink_switch_connections(line) abort
+    let l:connection = a:line
+    let l:sp = split(l:connection, ' ')
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'switchConnections',
+    \   'command_args': [l:sp[0]],
     \   'callback_func': 's:handle_no_preview',
     \   'sync': v:false,
     \   'bufnr': bufnr('%'),
@@ -143,14 +204,26 @@ function! s:handle_fetch_database(server_name, command, data) abort
 
     " Select switch database
     let l:data = split(s:escape_string_for_display(a:data['response']['result']), '\n')
-    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Databases')
+    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Databases', function('sqls#fzf_sink_switch_database'))
     let l:database = fzf#run(l:opts)
 endfunction
 
-function! s:prepare_sqls_fzf_opts(source, prompt) abort
+function! s:handle_fetch_connection(server_name, command, data) abort
+    if lsp#client#is_error(a:data['response'])
+        call lsp#utils#error('Execute command failed on ' . a:server_name . ': ' . string(a:command) . ' -> ' . string(a:data))
+        return
+    endif
+
+    " Select switch database
+    let l:data = split(s:escape_string_for_display(a:data['response']['result']), '\n')
+    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Connections', function('sqls#fzf_sink_switch_connections'))
+    let l:database = fzf#run(l:opts)
+endfunction
+
+function! s:prepare_sqls_fzf_opts(source, prompt, sink) abort
     let opts = {
     \    'source': a:source,
-    \    'sink': function('sqls#fzf_sink'),
+    \    'sink': a:sink,
     \    'options': ['--prompt', a:prompt] + get(s:, 'sqls_fzf_opt', []),
     \ }
     return fzf#wrap(opts)
