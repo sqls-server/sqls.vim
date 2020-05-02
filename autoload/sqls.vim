@@ -12,6 +12,17 @@ function! sqls#execute_query() abort
     \ })
 endfunction
 
+function! sqls#execute_query_vertical() abort
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'executeQuery',
+    \   'command_args': [get(lsp#get_text_document_identifier(), 'uri', v:null), '-show-vertical'],
+    \   'callback_func': 's:handle_preview',
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
+endfunction
+
 function! sqls#show_databases() abort
     call sqls#lsp_execute_command({
     \   'server_name': 'sqls',
