@@ -1,7 +1,7 @@
 let g:sqls_loaded = 1
 
-command! SqlsExecuteQuery call sqls#execute_query()
-command! SqlsExecuteQueryVertical call sqls#execute_query_vertical()
+command! -range SqlsExecuteQuery call sqls#execute_query(<range> != 0)
+command! -range SqlsExecuteQueryVertical call sqls#execute_query_vertical(<range> != 0)
 command! SqlsShowDatabases call sqls#show_databases()
 command! SqlsShowConnections call sqls#show_connections()
 command! SqlsShowTables call sqls#show_tables()
