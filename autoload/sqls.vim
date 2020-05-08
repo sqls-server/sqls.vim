@@ -1,54 +1,50 @@
 let s:commands = {}
 let s:sqls_fzf_opt = []
 
-function! sqls#execute_query(selection) abort
-    let l:selection = a:selection
-    if l:selection
-        let l:range = lsp#utils#range#_get_recent_visual_range()
-        call sqls#lsp_execute_command({
-        \   'server_name': 'sqls',
-        \   'command_name': 'executeQuery',
-        \   'command_args': [get(lsp#get_text_document_identifier(), 'uri', v:null)],
-        \   'command_range': l:range,
-        \   'callback_func': 's:handle_preview',
-        \   'sync': v:false,
-        \   'bufnr': bufnr('%'),
-        \ })
-        return
+function! sqls#_execute_query(selection) abort
+    let l:mode = 'n'
+    if a:selection
+        let l:mode = 'v'
     endif
-    call sqls#lsp_execute_command({
+    call sqls#execute_query(l:mode)
+endfunction
+
+function! sqls#execute_query(mode) abort
+    let l:args = {
     \   'server_name': 'sqls',
     \   'command_name': 'executeQuery',
     \   'command_args': [get(lsp#get_text_document_identifier(), 'uri', v:null)],
     \   'callback_func': 's:handle_preview',
     \   'sync': v:false,
     \   'bufnr': bufnr('%'),
-    \ })
+    \ }
+    if a:mode ==# 'v'
+        let l:args['command_range'] = lsp#utils#range#_get_recent_visual_range()
+    endif
+    call sqls#lsp_execute_command(args)
 endfunction
 
-function! sqls#execute_query_vertical(selection) abort
-    let l:selection = a:selection
-    if l:selection
-        let l:range = lsp#utils#range#_get_recent_visual_range()
-        call sqls#lsp_execute_command({
-        \   'server_name': 'sqls',
-        \   'command_name': 'executeQuery',
-        \   'command_args': [get(lsp#get_text_document_identifier(), 'uri', v:null), '-show-vertical'],
-        \   'command_range': l:range,
-        \   'callback_func': 's:handle_preview',
-        \   'sync': v:false,
-        \   'bufnr': bufnr('%'),
-        \ })
-        return
+function! sqls#_execute_query_vertical(selection) abort
+    let l:mode = 'n'
+    if a:selection
+        let l:mode = 'v'
     endif
-    call sqls#lsp_execute_command({
+    call sqls#execute_query_vertical(l:mode)
+endfunction
+
+function! sqls#execute_query_vertical(mode) abort
+    let l:args = {
     \   'server_name': 'sqls',
     \   'command_name': 'executeQuery',
     \   'command_args': [get(lsp#get_text_document_identifier(), 'uri', v:null), '-show-vertical'],
     \   'callback_func': 's:handle_preview',
     \   'sync': v:false,
     \   'bufnr': bufnr('%'),
-    \ })
+    \ }
+    if a:mode ==# 'v'
+        let l:args['command_range'] = lsp#utils#range#_get_recent_visual_range()
+    endif
+    call sqls#lsp_execute_command(args)
 endfunction
 
 function! sqls#show_databases() abort
