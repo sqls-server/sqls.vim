@@ -254,7 +254,7 @@ function! s:handle_fetch_database(server_name, command, data) abort
 
     " Select switch database
     let l:data = split(s:escape_string_for_display(a:data['response']['result']), '\n')
-    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Databases', function('sqls#fzf_sink_switch_database'))
+    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Schemas>', function('sqls#fzf_sink_switch_database'))
     let l:database = fzf#run(l:opts)
 endfunction
 
@@ -266,7 +266,7 @@ function! s:handle_fetch_connection(server_name, command, data) abort
 
     " Select switch database
     let l:data = split(s:escape_string_for_display(a:data['response']['result']), '\n')
-    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Connections', function('sqls#fzf_sink_switch_connections'))
+    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Connections>', function('sqls#fzf_sink_switch_connections'))
     let l:database = fzf#run(l:opts)
 endfunction
 
