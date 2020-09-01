@@ -58,6 +58,17 @@ function! sqls#show_databases() abort
     \ })
 endfunction
 
+function! sqls#show_schemas() abort
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'showSchemas',
+    \   'command_args': v:null,
+    \   'callback_func': 's:handle_preview',
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
+endfunction
+
 function! sqls#show_connections() abort
     call sqls#lsp_execute_command({
     \   'server_name': 'sqls',
