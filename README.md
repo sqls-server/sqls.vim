@@ -9,7 +9,6 @@ For vim-plug
 ```vim
 Plug 'lighttiger2505/sqls.vim'
 Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/async.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 ```
 
@@ -17,7 +16,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 - [sqls](https://github.com/lighttiger2505/sqls)
 - [vim-lsp](https://github.com/prabirshrestha/vim-lsp)
-    - [async.vim](https://github.com/prabirshrestha/async.vim)
 - [fzf](https://github.com/junegunn/fzf)
 
 ## Feature
