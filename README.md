@@ -30,5 +30,5 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 | SqlsShowDatabases                                   | <plug>(sqls-show-databases)         | show database to preview buffer.                                             |
 | SqlsSwitchDatabase                                  | <plug>(sqls-switch-database)        | select and swith database. Requirement fzf.                                  |
 | SqlsSwitchDatabase `<DB Name>`                      | -                                   | swith database.                                                              |
-| SqlsSwitchSqlsSwitchConnection                      | <plug>(sqls-switch-connection)      | select and swith database connection. Requirement fzf.                       |
-| SqlsSwitchSqlsSwitchConnection `<Connection Index>` | -                                   | swith database connection.                                                   |
+| SqlsSwitchConnection                                | <plug>(sqls-switch-connection)      | select and swith database connection. Requirement fzf.                       |
+| SqlsSwitchConnection `<Connection Index>`           | -                                   | swith database connection.                                                   |
