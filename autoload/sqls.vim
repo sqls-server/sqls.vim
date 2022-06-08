@@ -81,7 +81,14 @@ function! sqls#show_connections() abort
 endfunction
 
 function! sqls#show_tables() abort
-    echo 'no implements'
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'showTables',
+    \   'command_args': v:null,
+    \   'callback_func': 's:handle_preview',
+    \   'sync': v:false,
+    \   'bufnr': bufnr('%'),
+    \ })
 endfunction
 
 function! sqls#describe_table() abort
