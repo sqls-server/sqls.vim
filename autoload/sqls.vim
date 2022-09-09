@@ -80,6 +80,27 @@ function! sqls#show_connections() abort
     \ })
 endfunction
 
+function! s:handle_data(ctx, server_name, command, data) abort
+    if has_key(a:data['response'], 'result')
+        let a:ctx['response'] = a:data['response']
+    endif
+endfunction
+
+function! sqls#complete_connections(A, L, P) abort
+    let l:result = {'response': {'result': ''}}
+    call sqls#lsp_execute_command({
+    \   'server_name': 'sqls',
+    \   'command_name': 'showConnections',
+    \   'command_args': v:null,
+    \   'callback_func': 's:handle_data',
+    \   'callback_args': [l:result],
+    \   'sync': v:true,
+    \   'bufnr': bufnr('%'),
+    \ })
+    let l:connections = map(split(l:result['response']['result'], '\n'), {_, line -> split(line, '\s\+')[2]})
+    return l:connections
+endfunction
+
 function! sqls#show_tables() abort
     call sqls#lsp_execute_command({
     \   'server_name': 'sqls',
@@ -149,6 +170,7 @@ function! sqls#lsp_execute_command(params) abort
     let l:command_range = get(a:params, 'command_range', v:null)
     let l:server_name = get(a:params, 'server_name', '')
     let l:callback_func = get(a:params, 'callback_func', 's:handle_no_preview')
+    let l:callback_args = get(a:params, 'callback_args', [])
     let l:bufnr = get(a:params, 'bufnr', -1)
     let l:sync = get(a:params, 'sync', v:false)
 
@@ -181,7 +203,7 @@ function! sqls#lsp_execute_command(params) abort
         \   'method': 'workspace/executeCommand',
         \   'params': l:command,
         \   'sync': l:sync,
-        \   'on_notification': function(l:callback_func, [l:server_name, l:command]),
+        \   'on_notification': function(l:callback_func, l:callback_args + [l:server_name, l:command]),
         \ })
     endif
     echo 'Do ' . l:command_name
