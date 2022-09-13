@@ -253,6 +253,18 @@ function! s:open_preview_buffer(data, buf_filetype) abort
     call win_gotoid(l:preview_win_id)
 endfunction
 
+function! s:select(data, prompt, callback) abort
+    if exists(':FZF')
+        let l:opts = s:prepare_sqls_fzf_opts(a:data, a:prompt, function(a:callback))
+        call fzf#run(l:opts)
+    else
+        let l:selected = inputlist(a:data)
+        if l:selected > 0
+            call call(a:callback, [a:data[l:selected-1]])
+        endif
+    endif
+endfunction
+
 function! s:handle_fetch_database(server_name, command, data) abort
     if lsp#client#is_error(a:data['response'])
         call lsp#utils#error('Execute command failed on ' . a:server_name . ': ' . string(a:command) . ' -> ' . string(a:data))
@@ -261,8 +273,7 @@ function! s:handle_fetch_database(server_name, command, data) abort
 
     " Select switch database
     let l:data = split(s:escape_string_for_display(a:data['response']['result']), '\n')
-    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Schemas>', function('sqls#fzf_sink_switch_database'))
-    let l:database = fzf#run(l:opts)
+    call s:select(l:data, 'Schemas>', 'sqls#fzf_sink_switch_database')
 endfunction
 
 function! s:handle_fetch_connection(server_name, command, data) abort
@@ -273,8 +284,7 @@ function! s:handle_fetch_connection(server_name, command, data) abort
 
     " Select switch database
     let l:data = split(s:escape_string_for_display(a:data['response']['result']), '\n')
-    let l:opts = s:prepare_sqls_fzf_opts(l:data, 'Connections>', function('sqls#fzf_sink_switch_connections'))
-    let l:database = fzf#run(l:opts)
+    call s:select(l:data, 'Connections>', 'sqls#fzf_sink_switch_connections')
 endfunction
 
 function! s:prepare_sqls_fzf_opts(source, prompt, sink) abort
