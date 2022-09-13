@@ -8,7 +8,7 @@ command! SqlsShowConnections call sqls#show_connections()
 command! SqlsShowTables call sqls#show_tables()
 command! SqlsDescribeTable call sqls#describe_table()
 command! -nargs=? SqlsSwitchDatabase call sqls#switch_database(<f-args>)
-command! -nargs=? SqlsSwitchConnection call sqls#switch_connection(<f-args>)
+command! -nargs=? -complete=customlist,sqls#complete_connections SqlsSwitchConnection call sqls#switch_connection(<f-args>)
 
 nnoremap <plug>(sqls-execute-query) :<C-U>call sqls#execute_query('n')<CR>
 vnoremap <plug>(sqls-execute-query) :<C-U>call sqls#execute_query('v')<CR>
