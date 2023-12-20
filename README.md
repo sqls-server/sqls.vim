@@ -1,20 +1,20 @@
 # sqls.vim
 
-Vim plugin for [sqls](https://github.com/lighttiger2505/sqls)
+Vim plugin for [sqls](https://github.com/sqls-server/sqls)
 
 ## install
 
 For vim-plug
 
 ```vim
-Plug 'lighttiger2505/sqls.vim'
+Plug 'sqls-server/sqls.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 ```
 
 ### depends
 
-- [sqls](https://github.com/lighttiger2505/sqls)
+- [sqls](https://github.com/sqls-server/sqls)
 - [vim-lsp](https://github.com/prabirshrestha/vim-lsp)
 - [fzf](https://github.com/junegunn/fzf)
 
